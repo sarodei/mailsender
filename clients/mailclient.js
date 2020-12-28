@@ -9,19 +9,16 @@ apiKey.apiKey = properties.mailClient.apikey;
 function sendMail(sendSmtpEmailInput){
   console.log("Input to client"+sendSmtpEmailInput);
     const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
-    let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail(); // SendSmtpEmail | Values to send a transactional email
-    sendSmtpEmail = {
+    const sendSmtpEmail = {
         sender: {
-            email: properties.mailClient.senderEmailAddress,
-            name: sendSmtpEmailInput.sender.name
+            email : properties.mailClient.senderEmailAddress,
+            name : sendSmtpEmailInput.sender.name
         },
-        to: sendSmtpEmailInput.to,
-        subject: sendSmtpEmailInput.subject,
-        textContent : sendSmtpEmailInput.textContent
-        //,
-        // headers: {
-        //     // 'X-Mailin-custom': 'custom_header_1:custom_value_1|custom_header_2:custom_value_2'
-        // }
+        to : sendSmtpEmailInput.to,
+        subject : sendSmtpEmailInput.subject,
+        textContent : sendSmtpEmailInput.textContent,
+        cc : sendSmtpEmailInput.cc,
+        bcc : sendSmtpEmailInput.bcc
     };
     console.log('Sending mail: ' + sendSmtpEmail);
     apiInstance.sendTransacEmail(sendSmtpEmail).then(function(data) {
