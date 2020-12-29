@@ -1,5 +1,7 @@
 const createError = require('http-errors');
 const mailClient = require('../clients/mailclient');
+const scheduleMail = require('./scheduler');
+const moment = require('moment');
 
 function sendMail(input){
     //validate request
@@ -8,8 +10,12 @@ function sendMail(input){
     //Create input for mail client
     let sendEmailInput = mapToSendSmtpEmailInput(input);
     console.log(sendEmailInput);
-    //send mail
-    mailClient(sendEmailInput);
+    if(input.scheduleMail && input.scheduledTimeUTC){
+      scheduleMail(sendEmailInput, input.scheduledTimeUTC);
+    }else{
+      //send mail
+      mailClient(sendEmailInput);
+    }
 }
 
 function mapToSendSmtpEmailInput(req){
@@ -38,6 +44,10 @@ function validateMailRequest(req){
   validateMulitpleEmailField(req.to);
   validateMulitpleEmailField(req.cc);
   validateMulitpleEmailField(req.bcc);
+  if(req.scheduleMail){
+    throwErrorOnEmptyString(req,'scheduledTimeUTC');
+    throwErrorOnInvalidISODate(req, 'scheduledTimeUTC');
+  }
 }
 
 function validateMulitpleEmailField(recipients){
@@ -56,6 +66,12 @@ function throwErrorOnEmptyString(obj, stringProperty){
 function throwErrorOnInvalidEmailAddress(mail) {
   if (!/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(mail)){
     throw createError(400, 'Invalid email address provided: ' + mail);
+  }
+}
+
+function throwErrorOnInvalidISODate(obj, stringProperty){
+  if(!moment(obj[stringProperty], moment.ISO_8601, true).isValid()){
+    throw createError(400, 'Time provided is not a valid ISO date: ' + stringProperty);
   }
 }
 
