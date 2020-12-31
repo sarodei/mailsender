@@ -1,13 +1,13 @@
 const properties = require('../config/properties');
 const SibApiV3Sdk = require('sib-api-v3-sdk');
+const logger = require('../config/logger')('mailclient.js');
 
 const defaultClient = SibApiV3Sdk.ApiClient.instance;
 // Configure API key authorization: api-key
 const apiKey = defaultClient.authentications['api-key'];
 apiKey.apiKey = properties.mailClient.apikey;
 
-function sendMail(sendSmtpEmailInput){
-  console.log("Input to client"+sendSmtpEmailInput);
+async function sendMail(sendSmtpEmailInput){
     const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
     const sendSmtpEmail = {
         sender: {
@@ -20,15 +20,15 @@ function sendMail(sendSmtpEmailInput){
         cc : sendSmtpEmailInput.cc,
         bcc : sendSmtpEmailInput.bcc
     };
-    console.log('Sending mail: ' + sendSmtpEmail);
-    apiInstance.sendTransacEmail(sendSmtpEmail).then(function(data) {
-      console.log('API called successfully. Returned data: ' + data);
-      console.log(data);
+    logger.log('info', 'Sending mail for requestId:' + sendSmtpEmailInput.requestId, sendSmtpEmail);
+    let messageId = await apiInstance.sendTransacEmail(sendSmtpEmail).then(function(data) {
+      logger.log('info', 'Mail sent succesfully for requestId:' + sendSmtpEmailInput.requestId, data);
+      return data.messageId;
     }, function(error) {
-      console.error("Error sending mail:"+error);
-      console.error(error);
+      logger.log('error', 'Error sending mail for requestId:' + sendSmtpEmailInput.requestId, error);
       throw error;
     });
+    return messageId;
 }
 
 module.exports = sendMail;

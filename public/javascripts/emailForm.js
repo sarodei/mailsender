@@ -27,16 +27,30 @@ function pageLoadEvent() {
     handleCheckBoxChange({ target: document.getElementById('scheduleMail') });
 }
 
-function submitForm() {
+async function submitForm() {
     const form = document.getElementById('mailform');
+    let utcDateTime;
     if (document.getElementById('scheduleMail').checked && document.getElementById('scheduledDate').value) {
-        const utcDateTime = document.createElement('INPUT');
+        if (utcDateTime = document.getElementById('scheduledTimeUTC')) {
+            form.removeChild(utcDateTime);
+        }
+        utcDateTime = document.createElement('INPUT');
         utcDateTime.type = 'HIDDEN';
         utcDateTime.name = 'scheduledTimeUTC';
-        utcDateTime.value = new Date(document.getElementById('scheduledDate').value).toISOString();;
+        utcDateTime.id = 'scheduledTimeUTC';
+        utcDateTime.value = new Date(document.getElementById('scheduledDate').value).toISOString();
+
         form.appendChild(utcDateTime);
     }
-    let response = sendMail(form);
+    let response = await sendMail(form);
+    let userMessage = response.message + "\nYour reference id is:" + response.requestId;
+    if (response.messageId) {
+        userMessage += "\nYour MessageId:" + response.messageId;
+    }
+    userMessage += "\nSend same email again?"
+    if (!confirm(userMessage)) {
+        document.getElementById('reset').click();
+    };
 }
 
 async function sendMail(form) {
@@ -51,11 +65,11 @@ async function sendMail(form) {
             accept: 'application/json',
             body: new URLSearchParams(new FormData(form))
         }).then((response) => {
-                return response.json();
+            return response.json();
         });
         return data;
     } catch (e) {
         console.error('Error:' + e);
-        throw e;
+        return { result: 'Failed', requestId: req.headers['X-API-Request'], message: "Unable to connect to the server" };
     }
 }
