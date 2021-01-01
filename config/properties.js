@@ -2,6 +2,9 @@ const property = {
     'service':{
         'port' : 3000
     },
+    'log':{
+        'isDebugEnabled': true
+    },
     'apiInput':{
         'multipleMailDelimiter': ','
     },

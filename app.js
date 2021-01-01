@@ -7,7 +7,6 @@ const fs = require('fs');
 const { v1: uuidv1 } = require('uuid');
 const logger = require('./config/logger')('app.js');
 
-const indexRouter = require('./routes');
 const mailRouter = require('./routes/mailApi');
 
 const app = express();
@@ -25,7 +24,6 @@ app.use(cookieParser());
 app.use('/web', express.static(path.join(__dirname, 'public')));
 
 //routers
-app.use('/', indexRouter);
 app.use('/mail', mailRouter);
 
 // catch 404 and forward to error handler

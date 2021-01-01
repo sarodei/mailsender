@@ -6,6 +6,7 @@
 
 const app = require('../app');
 const properties = require('../config/properties');
+const logger = require('../config/logger')('www.js');
 const http = require('http');
 
 /**
@@ -55,6 +56,7 @@ function normalizePort(val) {
 
 function onError(error) {
   if (error.syscall !== 'listen') {
+    logger.error('Unwanted error found', error);
     throw error;
   }
 
@@ -65,14 +67,15 @@ function onError(error) {
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
+      logger.error(bind + ' requires elevated privileges', error);
       process.exit(1);
       break;
     case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
+      logger.error(bind + ' is already in use', error);
       process.exit(1);
       break;
     default:
+      logger.error(error.code + ' found', error);
       throw error;
   }
 }
@@ -86,5 +89,6 @@ function onListening() {
   const bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
+  logger.info('Listening on ' + bind);
   console.log('Listening on ' + bind);
 }
