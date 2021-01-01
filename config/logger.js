@@ -32,7 +32,6 @@ const logger = createLogger({
 });
 
 function createChildLogger(sourceName){
-    logger.info('Creating Child logger:'+sourceName);
     if(!sourceName){
         logger.alert('Unable to initialise a child logger with empty sourceName');
         throw Error("Missing source name for creating logger");
