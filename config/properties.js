@@ -1,6 +1,6 @@
 const property = {
     'service':{
-        'port' : 3000
+        'port' : process.env.PORT || 5000
     },
     'log':{
         'isDebugEnabled': true
