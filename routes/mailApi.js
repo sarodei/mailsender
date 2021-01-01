@@ -6,8 +6,8 @@ const router = express.Router();
 
 /* POST send mail. */
 router.post('/', async function(req, res, next) {
-  try{
   let requestId = req.headers['X-API-Request'];
+  try{
   logger.info("Request recieved for sending mail for requestId:" + requestId, req.body, req.headers);
 
   //send mail

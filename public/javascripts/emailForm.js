@@ -1,3 +1,9 @@
+Date.prototype.addDays = function(days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() + days);
+    return date;
+}
+
 function handleCheckBoxChange(e) {
     let checkbox = e.target;
     if (checkbox.id === 'enableCC') {
@@ -25,6 +31,13 @@ function pageLoadEvent() {
     handleCheckBoxChange({ target: document.getElementById('enableCC') });
     handleCheckBoxChange({ target: document.getElementById('enableBCC') });
     handleCheckBoxChange({ target: document.getElementById('scheduleMail') });
+    setScheduledMailTimeLimits();
+}
+
+function setScheduledMailTimeLimits() {
+    const element = document.getElementById('scheduledDate');
+    element.min = new Date().toISOString().slice(0,16)
+    element.max = new Date().addDays(24).toISOString().slice(0,16)
 }
 
 async function submitForm() {
