@@ -4,7 +4,9 @@ const properties = require('./properties');
 const logger = createLogger({
     level: 'info',
     format: format.combine(format.timestamp(),format.json()),
+    handleExceptions: true,
     transports: [
+        new transports.Console(),
         new transports.File({
             level: properties.log.isDebugEnabled? 'debug' : 'info',
             dirname: __dirname + '/../logs',
